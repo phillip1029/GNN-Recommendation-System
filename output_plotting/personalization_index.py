@@ -23,56 +23,59 @@ print(df.shape)
 print(df.head())
 print(df.info())
 
-def df_to_dict(df):
-    """Convert a pandas DataFrame to a dictionary."""
-    # Note: df.itterrows() is slow
-    user_recommendations = {}
-    for index, row in df.iterrows():
-        user = row["User"]
-        recommendations = {row["Rec1"], row["Rec2"], row["Rec3"], row["Rec4"], row["Rec5"]}
-        user_recommendations[user] = recommendations
-    return user_recommendations
 
-def df_to_dict1(df):
-    """Convert a pandas DataFrame to a dictionary."""
-    user_recommendations = df.apply(lambda row: set(row), axis=1).to_dict()
-    return user_recommendations
+def not_used():
+    def df_to_dict(df):
+        """Convert a pandas DataFrame to a dictionary."""
+        # Note: df.itterrows() is slow
+        user_recommendations = {}
+        for index, row in df.iterrows():
+            user = row["User"]
+            recommendations = {row["Rec1"], row["Rec2"], row["Rec3"], row["Rec4"], row["Rec5"]}
+            user_recommendations[user] = recommendations
+        return user_recommendations
 
-def jaccard_distance(set1, set2):
-    """Calculate the Jaccard Distance between two sets."""
-    intersection = len(set1.intersection(set2))
-    union = len(set1.union(set2))
-    return 1 - intersection / union if union != 0 else 1
+    def df_to_dict1(df):
+        """Convert a pandas DataFrame to a dictionary."""
+        user_recommendations = df.apply(lambda row: set(row), axis=1).to_dict()
+        return user_recommendations
 
-def calculate_personalization_index(recommendations):
-    """Calculate the average Jaccard Distance across all user pairs."""
-    distances = []
-    for (user1, recs1), (user2, recs2) in combinations(recommendations.items(), 2):
-        dist = jaccard_distance(recs1, recs2)
-        distances.append(dist)
+    def jaccard_distance(set1, set2):
+        """Calculate the Jaccard Distance between two sets."""
+        intersection = len(set1.intersection(set2))
+        union = len(set1.union(set2))
+        return 1 - intersection / union if union != 0 else 1
 
-    return sum(distances) / len(distances) if distances else 0
+    def calculate_personalization_index(recommendations):
+        """Calculate the average Jaccard Distance across all user pairs."""
+        distances = []
+        for (user1, recs1), (user2, recs2) in combinations(recommendations.items(), 2):
+            dist = jaccard_distance(recs1, recs2)
+            distances.append(dist)
 
-# Define this as a top-level function
-def compute_distance(recommendations, pair):
-    try:
-        user1, user2 = pair
-        logging.info(f"Starting task {user1}-{user2}")
-        return jaccard_distance(recommendations[user1], recommendations[user2])
-    except Exception as e:
-        traceback.print_exc()  # Print stack trace
-        raise
+        return sum(distances) / len(distances) if distances else 0
 
-def calculate_personalization_index_parallel(recommendations, n_workers=4):
-    """Calculate the average Jaccard Distance across all user pairs using parallel processing."""
-    user_pairs = list(combinations(recommendations.keys(), 2))
+    # Define this as a top-level function
+    def compute_distance(recommendations, pair):
+        try:
+            user1, user2 = pair
+            logging.info(f"Starting task {user1}-{user2}")
+            return jaccard_distance(recommendations[user1], recommendations[user2])
+        except Exception as e:
+            traceback.print_exc()  # Print stack trace
+            raise
 
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
-        from functools import partial
-        func = partial(compute_distance, recommendations)
-        distances = list(executor.map(func, user_pairs))
+    def calculate_personalization_index_parallel(recommendations, n_workers=4):
+        """Calculate the average Jaccard Distance across all user pairs using parallel processing."""
+        user_pairs = list(combinations(recommendations.keys(), 2))
 
-    return sum(distances) / len(distances) if distances else 0
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            from functools import partial
+            func = partial(compute_distance, recommendations)
+            distances = list(executor.map(func, user_pairs))
+
+        return sum(distances) / len(distances) if distances else 0
+# end of not_used()
 
 def pairwise_jaccard_distances(df):
     """Calculate the Jaccard Distance using sklearn."""
@@ -96,6 +99,8 @@ def pairwise_jaccard_distances(df):
 
     return avg_distance
 
+# below two functions are to use sparse matrix method
+# ref: https://na-o-ys.github.io/others/2015-11-07-sparse-vector-similarities.html
 def create_sparse_matrix(df):
     """Create a sparse CSR matrix from the DataFrame."""
     # Assuming the 'User' column exists and the rest are item recommendations
@@ -137,21 +142,20 @@ def pairwise_jaccard_similarity_sparse(mat):
 
     return avg_distance
 
-# Example usage
-# Assuming 'user_recommendations' is a dictionary where the key is the user ID and the value is a set of top 5 recommended items
-# Example: {'user1': {'item1', 'item2', 'item3', 'item4', 'item5'}, 'user2': {'item6', 'item7', 'item3', 'item9', 'item10'}, ...}
-
 if __name__ == "__main__":
-    start_time = time.time()
     # user_recommendations = df_to_dict(df)
     # user_recommendations = df_to_dict1(df)
     # personalization_index = calculate_personalization_index(user_recommendations)
     # personalization_index = calculate_personalization_index_parallel(user_recommendations)
+
+    start_time = time.time()
     personalization_index = pairwise_jaccard_distances(df)
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time:.3f} seconds")
     print(f"Personalization Index: {personalization_index:.3f}")
+    # Execution time: 495.508 seconds
+    # Personalization Index: 0.953
 
     start_time = time.time()
     sparse_matrix = create_sparse_matrix(df)
@@ -160,6 +164,8 @@ if __name__ == "__main__":
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time:.3f} seconds")
     print(f"Personalization Index: {personalization_index:.3f}")
+    # Execution time: 435.011 seconds
+    # Personalization Index: 0.953
  
  
 
