@@ -77,6 +77,7 @@ def not_used():
         return sum(distances) / len(distances) if distances else 0
 # end of not_used()
 
+# ref: https://stackoverflow.com/questions/71554288/efficient-pairwise-jaccard-score-with-two-dataframes
 def pairwise_jaccard_distances(df):
     """Calculate the Jaccard Distance using sklearn."""
     # if df has 'User' column, drop it
