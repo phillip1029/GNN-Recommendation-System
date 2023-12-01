@@ -1,7 +1,8 @@
 import os
 import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
+import matplotlib.pyplot as plt
+import seaborn as sns
+from collections import Counter
 from itertools import combinations
 import time
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
@@ -143,6 +144,70 @@ def pairwise_jaccard_similarity_sparse(mat):
 
     return avg_distance
 
+def plot_item_percentage_bar(df):
+    # Flatten the DataFrame to get a list of all recommendations
+    all_recommendations = df.values.flatten()
+
+    # Count the frequency of each item in the recommendations
+    item_frequency = Counter(all_recommendations)
+
+    # Convert to a DataFrame for plotting
+    item_freq_df = pd.DataFrame(item_frequency.items(), columns=['Item', 'Frequency'])
+
+    # Calculate the percentage of total for each item's frequency
+    total_recommendations = len(all_recommendations)
+    item_freq_df['Percentage'] = (item_freq_df['Frequency'] / total_recommendations) * 100
+
+    # Sorting the DataFrame by the percentage in descending order
+    item_freq_df_sorted_by_percentage = item_freq_df.sort_values(by='Percentage', ascending=False, ignore_index=True)
+
+    # Plotting with the correctly sorted data
+    plt.figure(figsize=(20, 6))
+    # Generate a color palette with a color for each bar
+    n = len(item_freq_df_sorted_by_percentage)
+    palette = sns.color_palette("viridis", n_colors=n)
+    # Plot using the generated palette
+    sns.barplot(x=item_freq_df_sorted_by_percentage.index, y='Percentage', data=item_freq_df_sorted_by_percentage, palette=palette)
+    plt.xlabel('Item Index (Sorted by Percentage)')
+    plt.ylabel('Percentage of Total Recommendations (%)')
+    plt.title('Percentage of Total Recommendations for Each Item (Sorted by Percentage)')
+    plt.xticks([])
+    plt.show()
+
+def plot2_item_percentage_bar(recommendations_df):
+    # Flatten the DataFrame to get a list of all recommendations
+    all_recommendations = recommendations_df.values.flatten()
+
+    # Count the frequency of each item in the recommendations
+    item_frequency = Counter(all_recommendations)
+
+    # Convert to a DataFrame for plotting
+    item_freq_df = pd.DataFrame(item_frequency.items(), columns=['Item', 'Frequency'])
+
+    # Calculate the percentage of total for each item's frequency
+    total_recommendations = len(all_recommendations)
+    item_freq_df['Percentage'] = (item_freq_df['Frequency'] / total_recommendations) * 100
+
+    # Sorting the DataFrame by the percentage in descending order
+    item_freq_df_sorted_by_percentage = item_freq_df.sort_values(by='Percentage', ascending=False, ignore_index=True)
+
+    # Plotting with the correctly sorted data
+    plt.figure(figsize=(20, 6))
+
+    # Generate a color palette with a color for each bar
+    n = len(item_freq_df_sorted_by_percentage)
+    palette = sns.color_palette("viridis", n_colors=n)
+
+    # Plot using the generated palette and hue parameter
+    sns.barplot(x=item_freq_df_sorted_by_percentage.index, y='Percentage', data=item_freq_df_sorted_by_percentage, 
+                hue=item_freq_df_sorted_by_percentage.index, palette=palette, dodge=False)
+    plt.xlabel('Item Index (Not Shown Due to Density)')
+    plt.ylabel('Percentage of Total Recommendations (%)')
+    plt.title('Percentage of Total Recommendations for Each Item (Sorted by Percentage)')
+    plt.xticks([])  # Hides the x-axis labels
+    plt.legend([],[], frameon=False)  # Hide the legend
+    plt.show()
+
 if __name__ == "__main__":
     # user_recommendations = df_to_dict(df)
     # user_recommendations = df_to_dict1(df)
@@ -167,8 +232,13 @@ if __name__ == "__main__":
     print(f"Personalization Index: {personalization_index:.3f}")
     # Execution time: 435.011 seconds
     # Personalization Index: 0.953
+
+    plot_item_percentage_bar(df)
+
+    plot2_item_percentage_bar(df)
  
  
+
 
 
 
