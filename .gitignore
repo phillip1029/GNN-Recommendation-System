@@ -1,1 +1,10 @@
 .DS_Store
+
+# Virtual environment
+.venv
+
+# Generated Libraries
+lib
+
+# node modules
+node_modules
