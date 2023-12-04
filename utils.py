@@ -119,7 +119,7 @@ def recommend_items_to_user(user_id):
     print(f"Top favorite items for user {user_id}:")
     rating_history = item_ratings[item_ratings['user_id'] == user_id]
     top_history = rating_history.sort_values(by=['rating'], ascending=False)
-    top_history = pd.merge(top_history, items_df, on='item_id', how='inner') 
+    top_history = pd.merge(top_history, items_df, on='item_id', how='inner')
     for i in range(len(top_history)):
         print(f"{i+1}. {top_history.iloc[i]['title']} by {top_history.iloc[i]['author']} published in {top_history.iloc[i]['Year-Of-Publication']}")
 
