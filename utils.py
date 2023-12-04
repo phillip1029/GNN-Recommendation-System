@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from PIL import Image
+import requests
 
 # from geopy.geocoders import Nominatim
 # import folium
@@ -77,6 +79,49 @@ def plot_rating_distribution(ratings_df):
     sns.countplot(x='rating', data=ratings_df)
     plt.title('Distribution of Ratings')
     plt.show()
+
+def recommend_items_to_user(user_id):
+    """
+    This function takes in a user id and returns a list of 5 recommended items for that user
+    """
+    top_5_recommendations_long = pd.read_csv('data/top_5_recommendations_long.csv')
+    items_df = pd.read_pickle('data/items_df.pkl')
+    all_ratings_df = pd.read_pickle('data/all_ratings_df.pkl')
+
+    # get all the rows of the user from ratings_df
+    top_recommends = top_5_recommendations_long.loc[top_5_recommendations_long['user_id'] == user_id]
+    # merge with items_df to get all other item info
+    top_recommends = top_recommends.merge(items_df, on='item_idx', how='left')
+     # all the title
+    titles = top_recommends['title'].tolist()
+    # exclude rows where rating less than 1 in all_ratings_df
+    item_ratings = all_ratings_df.loc[all_ratings_df['rating'] >= 0]
+
+    # print the top 5 recommendations: {title} by {author} published in {Year-Of-Publication}
+    print(f"Top 5 recommendations for user {user_id}:")
+    for i in range(5):
+        print(f"{i+1}. {top_recommends.iloc[i]['title']} by {top_recommends.iloc[i]['author']} published in {top_recommends.iloc[i]['Year-Of-Publication']}")
+   
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    fig, axs = plt.subplots(1, 5, figsize=(20,6))
+    fig.patch.set_alpha(0)
+    for i, title in enumerate(titles):        
+        url = items_df.loc[items_df['title'] == title]['Image-URL-L'][:1].values[0]
+        img = Image.open(requests.get(url, stream=True, headers=headers).raw)
+        rating = item_ratings.loc[item_ratings['item_id'] == items_df.loc[items_df['title'] == title]['item_id'][:1].values[0]]['rating'].mean()
+        axs[i].axis("off")
+        axs[i].imshow(img)
+        axs[i].set_title(f'{rating:.1f}/10', y=-0.1, fontsize=18)
+
+    # print the top 5 recommendations: {title} by {author} published in {Year-Of-Publication}
+    # print a line of break
+    print("----------------------------------------------------------------------------------------")
+    print(f"Top favorite items for user {user_id}:")
+    rating_history = item_ratings[item_ratings['user_id'] == user_id]
+    top_history = rating_history.sort_values(by=['rating'], ascending=False)
+    top_history = pd.merge(top_history, items_df, on='item_id', how='inner') 
+    for i in range(len(top_history)):
+        print(f"{i+1}. {top_history.iloc[i]['title']} by {top_history.iloc[i]['author']} published in {top_history.iloc[i]['Year-Of-Publication']}")
 
 
 # def get_lat_long(df_in):
