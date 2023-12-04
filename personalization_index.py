@@ -134,6 +134,24 @@ def pairwise_jaccard_similarity_sparse(mat):
 
     return avg_distance
 
+def simpson_diversity_index(df):
+    """Calculate the Simpson Diversity Index for a given list of recommendations.
+    D = 1 - (sum((n/N)^2))
+    """
+    # Assuming the 'User' column exists and the rest are item recommendations
+    if 'User' in df.columns:
+        rec = df.drop('User', axis=1)
+    else:
+        rec = df
+    # Flatten the DataFrame into a single list of all recommendations
+    combined_recommendations = df.values.flatten()
+    # Count the occurrences of each item
+    count = Counter(combined_recommendations)
+    N = sum(count.values())
+    diversity_index = 1 - sum((n / N) ** 2 for n in count.values())
+
+    return diversity_index
+
 def plot_item_percentage_bar(df):
     # Flatten the DataFrame to get a list of all recommendations
     all_recommendations = df.values.flatten()
@@ -200,8 +218,7 @@ def plot2_item_percentage_bar(recommendations_df):
 
 if __name__ == "__main__":
     path = os.getcwd()
-    # inputfile = os.path.join(path, 'top_5_recommendations.csv')
-    inputfile = os.path.join(path, 'output/top_5_recommendations_1.csv')
+    inputfile = os.path.join(path, 'data/top_5_recommendations.csv')
     df = pd.read_csv(inputfile)
     # df = df.head(2000)
     print(df.shape)
@@ -218,7 +235,7 @@ if __name__ == "__main__":
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time:.3f} seconds")
-    print(f"Personalization Index: {personalization_index:.3f}")
+    print(f"Personalization Index: {personalization_index:.4f}")
     # Execution time: 495.508 seconds
     # Personalization Index: 0.953
 
@@ -228,15 +245,23 @@ if __name__ == "__main__":
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"Execution time: {execution_time:.3f} seconds")
-    print(f"Personalization Index: {personalization_index:.3f}")
+    print(f"Personalization Index: {personalization_index:.4f}")
     # Execution time: 435.011 seconds
     # Personalization Index: 0.953
 
     plot_item_percentage_bar(df)
 
     plot2_item_percentage_bar(df)
+
+    # Example usage
+    start_time = time.time()
+    simpson_diversity_index = simpson_diversity_index(df)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Execution time: {execution_time:.3f} seconds")
+    print(f"Simpson Diversity Index: {simpson_diversity_index:.4f}")
+    
  
- 
 
 
 
@@ -244,40 +269,40 @@ if __name__ == "__main__":
 
 
 
-def personalization_index(df):
-    """
-    INPUT:
-    df - pandas dataframe with columns 'user_id', 'article_id', 'rank'
+# def personalization_index(df):
+#     """
+#     INPUT:
+#     df - pandas dataframe with columns 'user_id', 'article_id', 'rank'
     
-    OUTPUT:
-    personalization_index - float that gives the personalization index of the dataframe
+#     OUTPUT:
+#     personalization_index - float that gives the personalization index of the dataframe
     
-    Description:
-    This function calculates the personalization index of a dataframe. The personalization index is a measure of how
-    personalized the recommendations are for each user. It is calculated as the sum of the squared percentages of
-    interactions for each article across all users. The lower the personalization index, the more personalized the
-    recommendations are for each user.
-    """
-    # get the number of users
-    num_users = df['user_id'].nunique()
+#     Description:
+#     This function calculates the personalization index of a dataframe. The personalization index is a measure of how
+#     personalized the recommendations are for each user. It is calculated as the sum of the squared percentages of
+#     interactions for each article across all users. The lower the personalization index, the more personalized the
+#     recommendations are for each user.
+#     """
+#     # get the number of users
+#     num_users = df['user_id'].nunique()
     
-    # get the number of articles
-    num_articles = df['article_id'].nunique()
+#     # get the number of articles
+#     num_articles = df['article_id'].nunique()
     
-    # get the number of interactions
-    num_interactions = df.shape[0]
+#     # get the number of interactions
+#     num_interactions = df.shape[0]
     
-    # get the number of interactions for each article
-    article_interactions = df.groupby('article_id')['user_id'].count().reset_index()
-    article_interactions.columns = ['article_id', 'num_interactions']
+#     # get the number of interactions for each article
+#     article_interactions = df.groupby('article_id')['user_id'].count().reset_index()
+#     article_interactions.columns = ['article_id', 'num_interactions']
     
-    # get the percentage of interactions for each article
-    article_interactions['perc_interactions'] = article_interactions['num_interactions'] / num_interactions
+#     # get the percentage of interactions for each article
+#     article_interactions['perc_interactions'] = article_interactions['num_interactions'] / num_interactions
     
-    # get the sum of the squared percentages of interactions for each article
-    sum_sq_perc_interactions = np.sum(article_interactions['perc_interactions']**2)
+#     # get the sum of the squared percentages of interactions for each article
+#     sum_sq_perc_interactions = np.sum(article_interactions['perc_interactions']**2)
     
-    # calculate the personalization index
-    personalization_index = (1 - sum_sq_perc_interactions) / (1 - 1/num_articles)
+#     # calculate the personalization index
+#     personalization_index = (1 - sum_sq_perc_interactions) / (1 - 1/num_articles)
     
-    return personalization_index
+#     return personalization_index

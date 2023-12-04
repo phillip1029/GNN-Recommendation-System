@@ -1,0 +1,885 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+                <link href="lib/tom-select/tom-select.css" rel="stylesheet">
+                <script src="lib/tom-select/tom-select.complete.min.js"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+                <div id="select-menu" class="card-header">
+                    <div class="row no-gutters">
+                        <div class="col-10 pb-2">
+                            <select
+                            class="form-select"
+                            aria-label="Default select example"
+                            onchange="selectNode([value]);"
+                            id="select-node"
+                            placeholder="Select node..."
+                            >
+                                <option selected>Select a Node by ID</option>
+                                
+                                    <option value="0_221707">0_221707</option>
+                                
+                                    <option value="1_0439404371">1_0439404371</option>
+                                
+                                    <option value="1_0440219779">1_0440219779</option>
+                                
+                                    <option value="1_0446611808">1_0446611808</option>
+                                
+                                    <option value="1_0451180429">1_0451180429</option>
+                                
+                                    <option value="1_0553578693">1_0553578693</option>
+                                
+                                    <option value="1_0743456866">1_0743456866</option>
+                                
+                                    <option value="1_0971181802">1_0971181802</option>
+                                
+                                    <option value="2_929">2_929</option>
+                                
+                                    <option value="2_4143">2_4143</option>
+                                
+                                    <option value="2_11916">2_11916</option>
+                                
+                                    <option value="2_15651">2_15651</option>
+                                
+                                    <option value="2_20462">2_20462</option>
+                                
+                                    <option value="2_22154">2_22154</option>
+                                
+                                    <option value="2_22773">2_22773</option>
+                                
+                                    <option value="2_26053">2_26053</option>
+                                
+                                    <option value="2_28827">2_28827</option>
+                                
+                                    <option value="2_33119">2_33119</option>
+                                
+                                    <option value="2_48058">2_48058</option>
+                                
+                                    <option value="2_68239">2_68239</option>
+                                
+                                    <option value="2_77772">2_77772</option>
+                                
+                                    <option value="2_93672">2_93672</option>
+                                
+                                    <option value="2_100372">2_100372</option>
+                                
+                                    <option value="2_105221">2_105221</option>
+                                
+                                    <option value="2_107510">2_107510</option>
+                                
+                                    <option value="2_109115">2_109115</option>
+                                
+                                    <option value="2_111310">2_111310</option>
+                                
+                                    <option value="2_128045">2_128045</option>
+                                
+                                    <option value="2_132856">2_132856</option>
+                                
+                                    <option value="2_133484">2_133484</option>
+                                
+                                    <option value="2_133950">2_133950</option>
+                                
+                                    <option value="2_153996">2_153996</option>
+                                
+                                    <option value="2_162886">2_162886</option>
+                                
+                                    <option value="2_168954">2_168954</option>
+                                
+                                    <option value="2_173844">2_173844</option>
+                                
+                                    <option value="2_176658">2_176658</option>
+                                
+                                    <option value="2_178570">2_178570</option>
+                                
+                                    <option value="2_179531">2_179531</option>
+                                
+                                    <option value="2_183770">2_183770</option>
+                                
+                                    <option value="2_186567">2_186567</option>
+                                
+                                    <option value="2_188696">2_188696</option>
+                                
+                                    <option value="2_190074">2_190074</option>
+                                
+                                    <option value="2_193168">2_193168</option>
+                                
+                                    <option value="2_205903">2_205903</option>
+                                
+                                    <option value="2_209685">2_209685</option>
+                                
+                                    <option value="2_210597">2_210597</option>
+                                
+                                    <option value="2_212592">2_212592</option>
+                                
+                                    <option value="2_215278">2_215278</option>
+                                
+                                    <option value="2_221370">2_221370</option>
+                                
+                                    <option value="2_221707">2_221707</option>
+                                
+                                    <option value="2_224927">2_224927</option>
+                                
+                                    <option value="2_226713">2_226713</option>
+                                
+                                    <option value="2_230355">2_230355</option>
+                                
+                                    <option value="2_231048">2_231048</option>
+                                
+                                    <option value="2_233431">2_233431</option>
+                                
+                                    <option value="2_233723">2_233723</option>
+                                
+                                    <option value="2_248464">2_248464</option>
+                                
+                                    <option value="2_249223">2_249223</option>
+                                
+                                    <option value="2_250530">2_250530</option>
+                                
+                                    <option value="2_254299">2_254299</option>
+                                
+                                    <option value="2_256787">2_256787</option>
+                                
+                                    <option value="2_257385">2_257385</option>
+                                
+                                    <option value="2_261522">2_261522</option>
+                                
+                                    <option value="2_266662">2_266662</option>
+                                
+                                    <option value="2_12537">2_12537</option>
+                                
+                                    <option value="2_39407">2_39407</option>
+                                
+                                    <option value="2_81298">2_81298</option>
+                                
+                                    <option value="2_159040">2_159040</option>
+                                
+                                    <option value="2_200667">2_200667</option>
+                                
+                                    <option value="2_218976">2_218976</option>
+                                
+                                    <option value="2_5483">2_5483</option>
+                                
+                                    <option value="2_16718">2_16718</option>
+                                
+                                    <option value="2_30555">2_30555</option>
+                                
+                                    <option value="2_33614">2_33614</option>
+                                
+                                    <option value="2_35278">2_35278</option>
+                                
+                                    <option value="2_40698">2_40698</option>
+                                
+                                    <option value="2_42948">2_42948</option>
+                                
+                                    <option value="2_48743">2_48743</option>
+                                
+                                    <option value="2_49683">2_49683</option>
+                                
+                                    <option value="2_53515">2_53515</option>
+                                
+                                    <option value="2_57200">2_57200</option>
+                                
+                                    <option value="2_64683">2_64683</option>
+                                
+                                    <option value="2_69587">2_69587</option>
+                                
+                                    <option value="2_80246">2_80246</option>
+                                
+                                    <option value="2_81531">2_81531</option>
+                                
+                                    <option value="2_84191">2_84191</option>
+                                
+                                    <option value="2_85507">2_85507</option>
+                                
+                                    <option value="2_93794">2_93794</option>
+                                
+                                    <option value="2_94214">2_94214</option>
+                                
+                                    <option value="2_96727">2_96727</option>
+                                
+                                    <option value="2_98757">2_98757</option>
+                                
+                                    <option value="2_99765">2_99765</option>
+                                
+                                    <option value="2_105114">2_105114</option>
+                                
+                                    <option value="2_106340">2_106340</option>
+                                
+                                    <option value="2_106407">2_106407</option>
+                                
+                                    <option value="2_108182">2_108182</option>
+                                
+                                    <option value="2_110493">2_110493</option>
+                                
+                                    <option value="2_114182">2_114182</option>
+                                
+                                    <option value="2_114466">2_114466</option>
+                                
+                                    <option value="2_123280">2_123280</option>
+                                
+                                    <option value="2_124635">2_124635</option>
+                                
+                                    <option value="2_127245">2_127245</option>
+                                
+                                    <option value="2_127384">2_127384</option>
+                                
+                                    <option value="2_132392">2_132392</option>
+                                
+                                    <option value="2_135376">2_135376</option>
+                                
+                                    <option value="2_138858">2_138858</option>
+                                
+                                    <option value="2_142579">2_142579</option>
+                                
+                                    <option value="2_142760">2_142760</option>
+                                
+                                    <option value="2_144315">2_144315</option>
+                                
+                                    <option value="2_152696">2_152696</option>
+                                
+                                    <option value="2_155807">2_155807</option>
+                                
+                                    <option value="2_161299">2_161299</option>
+                                
+                                    <option value="2_167223">2_167223</option>
+                                
+                                    <option value="2_167892">2_167892</option>
+                                
+                                    <option value="2_171638">2_171638</option>
+                                
+                                    <option value="2_174367">2_174367</option>
+                                
+                                    <option value="2_175254">2_175254</option>
+                                
+                                    <option value="2_180658">2_180658</option>
+                                
+                                    <option value="2_183512">2_183512</option>
+                                
+                                    <option value="2_183952">2_183952</option>
+                                
+                                    <option value="2_184103">2_184103</option>
+                                
+                                    <option value="2_185368">2_185368</option>
+                                
+                                    <option value="2_208095">2_208095</option>
+                                
+                                    <option value="2_208506">2_208506</option>
+                                
+                                    <option value="2_212072">2_212072</option>
+                                
+                                    <option value="2_213202">2_213202</option>
+                                
+                                    <option value="2_213784">2_213784</option>
+                                
+                                    <option value="2_215371">2_215371</option>
+                                
+                                    <option value="2_221705">2_221705</option>
+                                
+                                    <option value="2_224289">2_224289</option>
+                                
+                                    <option value="2_226616">2_226616</option>
+                                
+                                    <option value="2_229864">2_229864</option>
+                                
+                                    <option value="2_231694">2_231694</option>
+                                
+                                    <option value="2_232066">2_232066</option>
+                                
+                                    <option value="2_233529">2_233529</option>
+                                
+                                    <option value="2_242249">2_242249</option>
+                                
+                                    <option value="2_245568">2_245568</option>
+                                
+                                    <option value="2_246160">2_246160</option>
+                                
+                                    <option value="2_257763">2_257763</option>
+                                
+                                    <option value="2_263645">2_263645</option>
+                                
+                                    <option value="2_265972">2_265972</option>
+                                
+                                    <option value="2_270269">2_270269</option>
+                                
+                                    <option value="2_271122">2_271122</option>
+                                
+                                    <option value="2_272885">2_272885</option>
+                                
+                                    <option value="2_4221">2_4221</option>
+                                
+                                    <option value="2_15021">2_15021</option>
+                                
+                                    <option value="2_17901">2_17901</option>
+                                
+                                    <option value="2_26721">2_26721</option>
+                                
+                                    <option value="2_30035">2_30035</option>
+                                
+                                    <option value="2_30245">2_30245</option>
+                                
+                                    <option value="2_38544">2_38544</option>
+                                
+                                    <option value="2_98930">2_98930</option>
+                                
+                                    <option value="2_99650">2_99650</option>
+                                
+                                    <option value="2_109288">2_109288</option>
+                                
+                                    <option value="2_111539">2_111539</option>
+                                
+                                    <option value="2_117858">2_117858</option>
+                                
+                                    <option value="2_126592">2_126592</option>
+                                
+                                    <option value="2_130312">2_130312</option>
+                                
+                                    <option value="2_133381">2_133381</option>
+                                
+                                    <option value="2_139827">2_139827</option>
+                                
+                                    <option value="2_142087">2_142087</option>
+                                
+                                    <option value="2_147400">2_147400</option>
+                                
+                                    <option value="2_154529">2_154529</option>
+                                
+                                    <option value="2_170721">2_170721</option>
+                                
+                                    <option value="2_171022">2_171022</option>
+                                
+                                    <option value="2_191841">2_191841</option>
+                                
+                                    <option value="2_207385">2_207385</option>
+                                
+                                    <option value="2_214583">2_214583</option>
+                                
+                                    <option value="2_215709">2_215709</option>
+                                
+                                    <option value="2_220300">2_220300</option>
+                                
+                                    <option value="2_239609">2_239609</option>
+                                
+                                    <option value="2_242143">2_242143</option>
+                                
+                                    <option value="2_254191">2_254191</option>
+                                
+                                    <option value="2_256700">2_256700</option>
+                                
+                                    <option value="2_256843">2_256843</option>
+                                
+                                    <option value="2_260688">2_260688</option>
+                                
+                                    <option value="2_278487">2_278487</option>
+                                
+                                    <option value="2_1619">2_1619</option>
+                                
+                                    <option value="2_8185">2_8185</option>
+                                
+                                    <option value="2_16130">2_16130</option>
+                                
+                                    <option value="2_19657">2_19657</option>
+                                
+                                    <option value="2_23582">2_23582</option>
+                                
+                                    <option value="2_29676">2_29676</option>
+                                
+                                    <option value="2_32802">2_32802</option>
+                                
+                                    <option value="2_40798">2_40798</option>
+                                
+                                    <option value="2_55142">2_55142</option>
+                                
+                                    <option value="2_55487">2_55487</option>
+                                
+                                    <option value="2_56307">2_56307</option>
+                                
+                                    <option value="2_69512">2_69512</option>
+                                
+                                    <option value="2_70571">2_70571</option>
+                                
+                                    <option value="2_74679">2_74679</option>
+                                
+                                    <option value="2_77394">2_77394</option>
+                                
+                                    <option value="2_86720">2_86720</option>
+                                
+                                    <option value="2_86969">2_86969</option>
+                                
+                                    <option value="2_93705">2_93705</option>
+                                
+                                    <option value="2_96320">2_96320</option>
+                                
+                                    <option value="2_101369">2_101369</option>
+                                
+                                    <option value="2_102945">2_102945</option>
+                                
+                                    <option value="2_105672">2_105672</option>
+                                
+                                    <option value="2_113804">2_113804</option>
+                                
+                                    <option value="2_114577">2_114577</option>
+                                
+                                    <option value="2_114583">2_114583</option>
+                                
+                                    <option value="2_115048">2_115048</option>
+                                
+                                    <option value="2_117593">2_117593</option>
+                                
+                                    <option value="2_120807">2_120807</option>
+                                
+                                    <option value="2_125157">2_125157</option>
+                                
+                                    <option value="2_127190">2_127190</option>
+                                
+                                    <option value="2_131094">2_131094</option>
+                                
+                                    <option value="2_135799">2_135799</option>
+                                
+                                    <option value="2_142017">2_142017</option>
+                                
+                                    <option value="2_146673">2_146673</option>
+                                
+                                    <option value="2_151787">2_151787</option>
+                                
+                                    <option value="2_163744">2_163744</option>
+                                
+                                    <option value="2_169301">2_169301</option>
+                                
+                                    <option value="2_170376">2_170376</option>
+                                
+                                    <option value="2_170527">2_170527</option>
+                                
+                                    <option value="2_171050">2_171050</option>
+                                
+                                    <option value="2_176459">2_176459</option>
+                                
+                                    <option value="2_177082">2_177082</option>
+                                
+                                    <option value="2_183963">2_183963</option>
+                                
+                                    <option value="2_184265">2_184265</option>
+                                
+                                    <option value="2_188878">2_188878</option>
+                                
+                                    <option value="2_189398">2_189398</option>
+                                
+                                    <option value="2_190844">2_190844</option>
+                                
+                                    <option value="2_207526">2_207526</option>
+                                
+                                    <option value="2_208897">2_208897</option>
+                                
+                                    <option value="2_211146">2_211146</option>
+                                
+                                    <option value="2_211231">2_211231</option>
+                                
+                                    <option value="2_220192">2_220192</option>
+                                
+                                    <option value="2_221306">2_221306</option>
+                                
+                                    <option value="2_223190">2_223190</option>
+                                
+                                    <option value="2_227097">2_227097</option>
+                                
+                                    <option value="2_231351">2_231351</option>
+                                
+                                    <option value="2_232541">2_232541</option>
+                                
+                                    <option value="2_232599">2_232599</option>
+                                
+                                    <option value="2_233955">2_233955</option>
+                                
+                                    <option value="2_237990">2_237990</option>
+                                
+                                    <option value="2_239063">2_239063</option>
+                                
+                                    <option value="2_248901">2_248901</option>
+                                
+                                    <option value="2_249103">2_249103</option>
+                                
+                                    <option value="2_250683">2_250683</option>
+                                
+                                    <option value="2_252287">2_252287</option>
+                                
+                                    <option value="2_257380">2_257380</option>
+                                
+                                    <option value="2_260699">2_260699</option>
+                                
+                                    <option value="2_261208">2_261208</option>
+                                
+                                    <option value="2_261907">2_261907</option>
+                                
+                                    <option value="2_262317">2_262317</option>
+                                
+                                    <option value="2_263500">2_263500</option>
+                                
+                                    <option value="2_271460">2_271460</option>
+                                
+                                    <option value="2_1546">2_1546</option>
+                                
+                                    <option value="2_40504">2_40504</option>
+                                
+                                    <option value="2_48468">2_48468</option>
+                                
+                                    <option value="2_54329">2_54329</option>
+                                
+                                    <option value="2_60050">2_60050</option>
+                                
+                                    <option value="2_61500">2_61500</option>
+                                
+                                    <option value="2_74286">2_74286</option>
+                                
+                                    <option value="2_74303">2_74303</option>
+                                
+                                    <option value="2_79957">2_79957</option>
+                                
+                                    <option value="2_84095">2_84095</option>
+                                
+                                    <option value="2_95799">2_95799</option>
+                                
+                                    <option value="2_99347">2_99347</option>
+                                
+                                    <option value="2_115997">2_115997</option>
+                                
+                                    <option value="2_124322">2_124322</option>
+                                
+                                    <option value="2_138515">2_138515</option>
+                                
+                                    <option value="2_146345">2_146345</option>
+                                
+                                    <option value="2_148539">2_148539</option>
+                                
+                                    <option value="2_160511">2_160511</option>
+                                
+                                    <option value="2_170319">2_170319</option>
+                                
+                                    <option value="2_170805">2_170805</option>
+                                
+                                    <option value="2_193557">2_193557</option>
+                                
+                                    <option value="2_194556">2_194556</option>
+                                
+                                    <option value="2_198726">2_198726</option>
+                                
+                                    <option value="2_209157">2_209157</option>
+                                
+                                    <option value="2_227192">2_227192</option>
+                                
+                                    <option value="2_230177">2_230177</option>
+                                
+                                    <option value="2_240216">2_240216</option>
+                                
+                                    <option value="2_247278">2_247278</option>
+                                
+                                    <option value="2_265818">2_265818</option>
+                                
+                                    <option value="2_268021">2_268021</option>
+                                
+                                    <option value="2_273252">2_273252</option>
+                                
+                                    <option value="2_8680">2_8680</option>
+                                
+                                    <option value="2_27888">2_27888</option>
+                                
+                                    <option value="2_38034">2_38034</option>
+                                
+                                    <option value="2_77602">2_77602</option>
+                                
+                                    <option value="2_93257">2_93257</option>
+                                
+                                    <option value="2_123325">2_123325</option>
+                                
+                                    <option value="2_124453">2_124453</option>
+                                
+                                    <option value="2_127421">2_127421</option>
+                                
+                                    <option value="2_132707">2_132707</option>
+                                
+                                    <option value="2_144486">2_144486</option>
+                                
+                                    <option value="2_173743">2_173743</option>
+                                
+                                    <option value="2_179713">2_179713</option>
+                                
+                                    <option value="2_188513">2_188513</option>
+                                
+                                    <option value="2_189163">2_189163</option>
+                                
+                                    <option value="2_189789">2_189789</option>
+                                
+                                    <option value="2_214011">2_214011</option>
+                                
+                                    <option value="2_220502">2_220502</option>
+                                
+                            </select>
+                        </div>
+                        <div class="col-2 pb-2">
+                            <button type="button" class="btn btn-primary btn-block" onclick="neighbourhoodHighlight({nodes: []});">Reset Selection</button>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            <div id="mynetwork" style="height: 100dvh;" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+                  new TomSelect("#select-node",{
+                      create: false,
+                      sortField: {
+                          field: "text",
+                          direction: "asc"
+                      }
+                  });
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#611C35", "id": "0_221707", "label": "221707", "shape": "dot", "size": 600}, {"color": "#2E5077", "id": "1_0439404371", "label": "1_0439404371", "shape": "dot", "size": 400, "title": "The Thief Lord"}, {"color": "#2E5077", "id": "1_0440219779", "label": "1_0440219779", "shape": "dot", "size": 400, "title": "The Voice on the Radio (Laurel Leaf Books)"}, {"color": "#2E5077", "id": "1_0446611808", "label": "1_0446611808", "shape": "dot", "size": 400, "title": "Envy"}, {"color": "#2E5077", "id": "1_0451180429", "label": "1_0451180429", "shape": "dot", "size": 400, "title": "The Quiet Game"}, {"color": "#2E5077", "id": "1_0553578693", "label": "1_0553578693", "shape": "dot", "size": 400, "title": "The Next Accident"}, {"color": "#2E5077", "id": "1_0743456866", "label": "1_0743456866", "shape": "dot", "size": 400, "title": "He Sees You When You\u0027re Sleeping : A Novel"}, {"color": "#2E5077", "id": "1_0971181802", "label": "1_0971181802", "shape": "dot", "size": 400, "title": "E-Wally and the Quest"}, {"color": "#FFA630", "id": "2_929", "label": "2_929", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_4143", "label": "2_4143", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_11916", "label": "2_11916", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_15651", "label": "2_15651", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_20462", "label": "2_20462", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_22154", "label": "2_22154", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_22773", "label": "2_22773", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_26053", "label": "2_26053", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_28827", "label": "2_28827", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_33119", "label": "2_33119", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_48058", "label": "2_48058", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_68239", "label": "2_68239", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_77772", "label": "2_77772", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_93672", "label": "2_93672", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_100372", "label": "2_100372", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_105221", "label": "2_105221", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_107510", "label": "2_107510", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_109115", "label": "2_109115", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_111310", "label": "2_111310", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_128045", "label": "2_128045", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_132856", "label": "2_132856", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_133484", "label": "2_133484", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_133950", "label": "2_133950", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_153996", "label": "2_153996", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_162886", "label": "2_162886", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_168954", "label": "2_168954", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_173844", "label": "2_173844", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_176658", "label": "2_176658", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_178570", "label": "2_178570", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_179531", "label": "2_179531", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_183770", "label": "2_183770", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_186567", "label": "2_186567", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_188696", "label": "2_188696", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_190074", "label": "2_190074", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_193168", "label": "2_193168", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_205903", "label": "2_205903", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_209685", "label": "2_209685", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_210597", "label": "2_210597", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_212592", "label": "2_212592", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_215278", "label": "2_215278", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_221370", "label": "2_221370", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_221707", "label": "2_221707", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_224927", "label": "2_224927", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_226713", "label": "2_226713", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_230355", "label": "2_230355", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_231048", "label": "2_231048", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_233431", "label": "2_233431", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_233723", "label": "2_233723", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_248464", "label": "2_248464", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_249223", "label": "2_249223", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_250530", "label": "2_250530", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_254299", "label": "2_254299", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_256787", "label": "2_256787", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_257385", "label": "2_257385", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_261522", "label": "2_261522", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_266662", "label": "2_266662", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_12537", "label": "2_12537", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_39407", "label": "2_39407", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_81298", "label": "2_81298", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_159040", "label": "2_159040", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_200667", "label": "2_200667", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_218976", "label": "2_218976", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_5483", "label": "2_5483", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_16718", "label": "2_16718", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_30555", "label": "2_30555", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_33614", "label": "2_33614", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_35278", "label": "2_35278", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_40698", "label": "2_40698", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_42948", "label": "2_42948", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_48743", "label": "2_48743", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_49683", "label": "2_49683", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_53515", "label": "2_53515", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_57200", "label": "2_57200", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_64683", "label": "2_64683", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_69587", "label": "2_69587", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_80246", "label": "2_80246", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_81531", "label": "2_81531", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_84191", "label": "2_84191", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_85507", "label": "2_85507", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_93794", "label": "2_93794", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_94214", "label": "2_94214", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_96727", "label": "2_96727", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_98757", "label": "2_98757", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_99765", "label": "2_99765", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_105114", "label": "2_105114", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_106340", "label": "2_106340", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_106407", "label": "2_106407", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_108182", "label": "2_108182", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_110493", "label": "2_110493", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_114182", "label": "2_114182", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_114466", "label": "2_114466", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_123280", "label": "2_123280", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_124635", "label": "2_124635", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_127245", "label": "2_127245", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_127384", "label": "2_127384", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_132392", "label": "2_132392", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_135376", "label": "2_135376", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_138858", "label": "2_138858", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_142579", "label": "2_142579", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_142760", "label": "2_142760", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_144315", "label": "2_144315", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_152696", "label": "2_152696", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_155807", "label": "2_155807", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_161299", "label": "2_161299", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_167223", "label": "2_167223", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_167892", "label": "2_167892", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_171638", "label": "2_171638", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_174367", "label": "2_174367", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_175254", "label": "2_175254", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_180658", "label": "2_180658", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_183512", "label": "2_183512", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_183952", "label": "2_183952", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_184103", "label": "2_184103", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_185368", "label": "2_185368", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_208095", "label": "2_208095", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_208506", "label": "2_208506", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_212072", "label": "2_212072", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_213202", "label": "2_213202", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_213784", "label": "2_213784", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_215371", "label": "2_215371", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_221705", "label": "2_221705", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_224289", "label": "2_224289", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_226616", "label": "2_226616", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_229864", "label": "2_229864", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_231694", "label": "2_231694", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_232066", "label": "2_232066", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_233529", "label": "2_233529", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_242249", "label": "2_242249", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_245568", "label": "2_245568", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_246160", "label": "2_246160", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_257763", "label": "2_257763", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_263645", "label": "2_263645", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_265972", "label": "2_265972", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_270269", "label": "2_270269", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_271122", "label": "2_271122", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_272885", "label": "2_272885", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_4221", "label": "2_4221", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_15021", "label": "2_15021", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_17901", "label": "2_17901", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_26721", "label": "2_26721", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_30035", "label": "2_30035", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_30245", "label": "2_30245", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_38544", "label": "2_38544", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_98930", "label": "2_98930", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_99650", "label": "2_99650", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_109288", "label": "2_109288", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_111539", "label": "2_111539", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_117858", "label": "2_117858", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_126592", "label": "2_126592", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_130312", "label": "2_130312", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_133381", "label": "2_133381", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_139827", "label": "2_139827", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_142087", "label": "2_142087", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_147400", "label": "2_147400", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_154529", "label": "2_154529", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_170721", "label": "2_170721", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_171022", "label": "2_171022", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_191841", "label": "2_191841", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_207385", "label": "2_207385", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_214583", "label": "2_214583", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_215709", "label": "2_215709", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_220300", "label": "2_220300", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_239609", "label": "2_239609", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_242143", "label": "2_242143", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_254191", "label": "2_254191", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_256700", "label": "2_256700", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_256843", "label": "2_256843", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_260688", "label": "2_260688", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_278487", "label": "2_278487", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_1619", "label": "2_1619", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_8185", "label": "2_8185", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_16130", "label": "2_16130", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_19657", "label": "2_19657", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_23582", "label": "2_23582", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_29676", "label": "2_29676", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_32802", "label": "2_32802", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_40798", "label": "2_40798", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_55142", "label": "2_55142", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_55487", "label": "2_55487", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_56307", "label": "2_56307", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_69512", "label": "2_69512", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_70571", "label": "2_70571", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_74679", "label": "2_74679", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_77394", "label": "2_77394", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_86720", "label": "2_86720", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_86969", "label": "2_86969", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_93705", "label": "2_93705", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_96320", "label": "2_96320", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_101369", "label": "2_101369", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_102945", "label": "2_102945", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_105672", "label": "2_105672", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_113804", "label": "2_113804", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_114577", "label": "2_114577", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_114583", "label": "2_114583", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_115048", "label": "2_115048", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_117593", "label": "2_117593", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_120807", "label": "2_120807", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_125157", "label": "2_125157", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_127190", "label": "2_127190", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_131094", "label": "2_131094", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_135799", "label": "2_135799", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_142017", "label": "2_142017", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_146673", "label": "2_146673", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_151787", "label": "2_151787", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_163744", "label": "2_163744", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_169301", "label": "2_169301", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_170376", "label": "2_170376", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_170527", "label": "2_170527", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_171050", "label": "2_171050", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_176459", "label": "2_176459", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_177082", "label": "2_177082", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_183963", "label": "2_183963", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_184265", "label": "2_184265", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_188878", "label": "2_188878", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_189398", "label": "2_189398", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_190844", "label": "2_190844", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_207526", "label": "2_207526", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_208897", "label": "2_208897", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_211146", "label": "2_211146", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_211231", "label": "2_211231", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_220192", "label": "2_220192", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_221306", "label": "2_221306", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_223190", "label": "2_223190", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_227097", "label": "2_227097", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_231351", "label": "2_231351", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_232541", "label": "2_232541", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_232599", "label": "2_232599", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_233955", "label": "2_233955", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_237990", "label": "2_237990", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_239063", "label": "2_239063", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_248901", "label": "2_248901", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_249103", "label": "2_249103", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_250683", "label": "2_250683", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_252287", "label": "2_252287", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_257380", "label": "2_257380", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_260699", "label": "2_260699", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_261208", "label": "2_261208", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_261907", "label": "2_261907", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_262317", "label": "2_262317", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_263500", "label": "2_263500", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_271460", "label": "2_271460", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_1546", "label": "2_1546", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_40504", "label": "2_40504", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_48468", "label": "2_48468", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_54329", "label": "2_54329", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_60050", "label": "2_60050", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_61500", "label": "2_61500", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_74286", "label": "2_74286", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_74303", "label": "2_74303", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_79957", "label": "2_79957", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_84095", "label": "2_84095", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_95799", "label": "2_95799", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_99347", "label": "2_99347", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_115997", "label": "2_115997", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_124322", "label": "2_124322", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_138515", "label": "2_138515", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_146345", "label": "2_146345", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_148539", "label": "2_148539", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_160511", "label": "2_160511", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_170319", "label": "2_170319", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_170805", "label": "2_170805", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_193557", "label": "2_193557", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_194556", "label": "2_194556", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_198726", "label": "2_198726", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_209157", "label": "2_209157", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_227192", "label": "2_227192", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_230177", "label": "2_230177", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_240216", "label": "2_240216", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_247278", "label": "2_247278", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_265818", "label": "2_265818", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_268021", "label": "2_268021", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_273252", "label": "2_273252", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_8680", "label": "2_8680", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_27888", "label": "2_27888", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_38034", "label": "2_38034", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_77602", "label": "2_77602", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_93257", "label": "2_93257", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_123325", "label": "2_123325", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_124453", "label": "2_124453", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_127421", "label": "2_127421", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_132707", "label": "2_132707", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_144486", "label": "2_144486", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_173743", "label": "2_173743", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_179713", "label": "2_179713", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_188513", "label": "2_188513", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_189163", "label": "2_189163", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_189789", "label": "2_189789", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_214011", "label": "2_214011", "shape": "dot", "size": 200}, {"color": "#FFA630", "id": "2_220502", "label": "2_220502", "shape": "dot", "size": 200}]);
+                  edges = new vis.DataSet([{"color": "#2E5077", "from": "0_221707", "to": "1_0439404371", "width": 1}, {"color": "#2E5077", "from": "0_221707", "to": "1_0440219779", "width": 1}, {"color": "#2E5077", "from": "0_221707", "to": "1_0446611808", "width": 1}, {"color": "#2E5077", "from": "0_221707", "to": "1_0451180429", "width": 1}, {"color": "#2E5077", "from": "0_221707", "to": "1_0553578693", "width": 1}, {"color": "#2E5077", "from": "0_221707", "to": "1_0743456866", "width": 1}, {"color": "#2E5077", "from": "0_221707", "to": "1_0971181802", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_929", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_4143", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_11916", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_15651", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_20462", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_22154", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_22773", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_26053", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_28827", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_33119", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_48058", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_68239", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_77772", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_93672", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_100372", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_105221", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_107510", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_109115", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_111310", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_128045", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_132856", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_133484", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_133950", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_153996", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_162886", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_168954", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_173844", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_176658", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_178570", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_179531", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_183770", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_186567", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_188696", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_190074", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_193168", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_205903", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_209685", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_210597", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_212592", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_215278", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_221370", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_221707", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_224927", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_226713", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_230355", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_231048", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_233431", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_233723", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_248464", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_249223", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_250530", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_254299", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_256787", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_257385", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_261522", "width": 1}, {"color": "#FFA630", "from": "1_0439404371", "to": "2_266662", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_12537", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_39407", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_81298", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_159040", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_200667", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_218976", "width": 1}, {"color": "#FFA630", "from": "1_0440219779", "to": "2_221707", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_5483", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_16718", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_30555", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_33614", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_35278", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_40698", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_42948", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_48743", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_49683", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_53515", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_57200", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_64683", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_69587", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_80246", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_81531", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_84191", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_85507", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_93794", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_94214", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_96727", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_98757", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_99765", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_105114", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_106340", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_106407", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_108182", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_110493", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_114182", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_114466", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_123280", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_124635", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_127245", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_127384", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_128045", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_132392", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_135376", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_138858", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_142579", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_142760", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_144315", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_152696", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_155807", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_161299", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_167223", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_167892", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_171638", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_174367", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_175254", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_180658", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_183512", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_183952", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_184103", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_185368", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_208095", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_208506", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_212072", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_213202", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_213784", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_215371", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_221705", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_221707", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_224289", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_226616", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_229864", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_231694", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_232066", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_233529", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_242249", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_245568", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_246160", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_257763", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_263645", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_265972", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_270269", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_271122", "width": 1}, {"color": "#FFA630", "from": "1_0446611808", "to": "2_272885", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_4221", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_15021", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_17901", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_26721", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_30035", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_30245", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_38544", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_98930", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_99650", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_109288", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_111539", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_117858", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_126592", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_130312", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_133381", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_139827", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_142087", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_144315", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_147400", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_154529", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_170721", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_171022", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_191841", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_207385", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_214583", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_215709", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_220300", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_221707", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_239609", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_242143", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_254191", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_256700", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_256843", "width": 1}, {"color": "#FFA630", "from": "1_0451180429", "to": "2_260688", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_278487", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_1619", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_8185", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_16130", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_19657", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_23582", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_29676", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_32802", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_40798", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_48743", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_55142", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_55487", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_56307", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_69512", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_70571", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_74679", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_77394", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_86720", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_86969", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_93705", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_96320", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_101369", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_102945", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_105672", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_113804", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_114577", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_114583", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_115048", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_117593", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_117858", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_120807", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_125157", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_127190", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_131094", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_135799", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_142017", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_144315", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_146673", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_151787", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_163744", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_169301", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_170376", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_170527", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_171050", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_176459", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_177082", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_183963", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_184265", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_188878", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_189398", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_190844", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_207526", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_208897", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_211146", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_211231", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_220192", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_221306", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_221707", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_223190", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_227097", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_231351", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_232541", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_232599", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_233955", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_237990", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_239063", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_248901", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_249103", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_250683", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_252287", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_257380", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_260699", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_261208", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_261907", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_262317", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_263500", "width": 1}, {"color": "#FFA630", "from": "1_0553578693", "to": "2_271460", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_1546", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_40504", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_48468", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_54329", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_60050", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_61500", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_74286", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_74303", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_79957", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_84095", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_95799", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_99347", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_115997", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_124322", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_138515", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_146345", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_148539", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_160511", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_170319", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_170805", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_193557", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_194556", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_198726", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_209157", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_221707", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_227192", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_230177", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_240216", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_247278", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_265818", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_268021", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_271460", "width": 1}, {"color": "#FFA630", "from": "1_0743456866", "to": "2_273252", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_8680", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_27888", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_38034", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_77602", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_93257", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_123325", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_124453", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_127421", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_132707", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_144486", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_173743", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_179713", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_188513", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_189163", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_189789", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_214011", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_220502", "width": 1}, {"color": "#FFA630", "from": "1_0971181802", "to": "2_221707", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+                    network.on("selectNode", neighbourhoodHighlight);
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
