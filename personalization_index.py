@@ -15,16 +15,6 @@ import scipy.sparse as sp
 # Set up basic logging
 logging.basicConfig(level=logging.INFO)
 
-path = os.getcwd()
-# inputfile = os.path.join(path, 'top_5_recommendations.csv')
-inputfile = os.path.join(path, 'top_5_recommendations_1.csv')
-df = pd.read_csv(inputfile)
-# df = df.head(2000)
-print(df.shape)
-print(df.head())
-print(df.info())
-
-
 def not_used():
     def df_to_dict(df):
         """Convert a pandas DataFrame to a dictionary."""
@@ -209,6 +199,15 @@ def plot2_item_percentage_bar(recommendations_df):
     plt.show()
 
 if __name__ == "__main__":
+    path = os.getcwd()
+    # inputfile = os.path.join(path, 'top_5_recommendations.csv')
+    inputfile = os.path.join(path, 'output/top_5_recommendations_1.csv')
+    df = pd.read_csv(inputfile)
+    # df = df.head(2000)
+    print(df.shape)
+    print(df.head())
+    print(df.info())
+
     # user_recommendations = df_to_dict(df)
     # user_recommendations = df_to_dict1(df)
     # personalization_index = calculate_personalization_index(user_recommendations)
