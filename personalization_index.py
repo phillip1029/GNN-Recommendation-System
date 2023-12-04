@@ -218,8 +218,7 @@ def plot2_item_percentage_bar(recommendations_df):
 
 if __name__ == "__main__":
     path = os.getcwd()
-    # inputfile = os.path.join(path, 'top_5_recommendations.csv')
-    inputfile = os.path.join(path, 'output/top_5_recommendations_1.csv')
+    inputfile = os.path.join(path, 'data/top_5_recommendations.csv')
     df = pd.read_csv(inputfile)
     # df = df.head(2000)
     print(df.shape)
