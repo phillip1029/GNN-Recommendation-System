@@ -77,7 +77,7 @@ def buildLayers(_target_user_id, _layer_count, _df, _G:nx.Graph,top_n:int=5):
         else:  # Even layers: find users
             current_layer_users = processing(current_layer_users, _df, 'isbn', 'user_id', layer, _G, users_df,top_n)
 
-def main(target_user_id:int,layer_count:int,top_n:int=5):
+def draw_user_graph(target_user_id:int,layer_count:int,top_n:int=5):
     # Initialize Pyvis Network
     net = Network(select_menu=True)
     # net.show_buttons(filter_=['physics'])
@@ -102,7 +102,7 @@ def main(target_user_id:int,layer_count:int,top_n:int=5):
 
 
 if __name__ == '__main__':
-    main(236172,3,10)
-    main(236179,3,10)
-    main(236184,3,10)
-    main(236198,3,10)
+    draw_user_graph(236172,3,10)
+    draw_user_graph(236179,3,10)
+    draw_user_graph(236184,3,10)
+    draw_user_graph(236198,3,10)
