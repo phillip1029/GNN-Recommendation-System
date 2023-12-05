@@ -44,20 +44,24 @@ def processing(items:set,next_layer_df:pd.DataFrame,current_layer_column_name:st
         # Get unique values and pick top 5
         top_5_next_layer_items = filtered_sorted_items[next_layer_column_name].unique()[:top_n]
         for next_layer_item in top_5_next_layer_items:
-            temp_set.add(next_layer_item)
-            try:
-                next_item = next_item_df[next_item_df[next_layer_column_name]==next_layer_item].iloc[0]
-                base_name = f"{layer_count}_{next_layer_column_name}:{next_item[next_layer_column_name]}"
-                title = ''
-                if(next_layer_column_name=='isbn'):
-                    title = f"layer:{layer_count}\nisbn:{next_item['isbn']}\nbook_title:{next_item['book_title']}\nbook_author:{next_item['book_author']}"
-                else:
-                    title = f"layer:{layer_count}\nuser_id:{next_item['user_id']}\nlocation:{next_item['location']}\nage:{next_item['age']}"
-                G.add_node(base_name,title=title, color=getColor(layer_count), size=getSize(layer_count))
-                G.add_edge(f"{layer_count-1}_{current_layer_column_name}:{item}",base_name)
-            except IndexError:
-                print(f"IndexError: {next_layer_item}")
-                temp_set.discard(next_layer_item)
+            test_name = f"{layer_count-2}_{next_layer_column_name}:{next_layer_item}"
+            if G.has_node(test_name):
+                print(f"Node already exists: {test_name}")
+            else:
+                temp_set.add(next_layer_item)
+                try:
+                    base_name = f"{layer_count}_{next_layer_column_name}:{next_layer_item}"
+                    next_item = next_item_df[next_item_df[next_layer_column_name]==next_layer_item].iloc[0]
+                    title = ''
+                    if(next_layer_column_name=='isbn'):
+                        title = f"layer:{layer_count}\nisbn:{next_item['isbn']}\nbook_title:{next_item['book_title']}\nbook_author:{next_item['book_author']}"
+                    else:
+                        title = f"layer:{layer_count}\nuser_id:{next_item['user_id']}\nlocation:{next_item['location']}\nage:{next_item['age']}"
+                    G.add_node(base_name,title=title, color=getColor(layer_count), size=getSize(layer_count))
+                    G.add_edge(f"{layer_count-1}_{current_layer_column_name}:{item}",base_name)
+                except IndexError:
+                    print(f"IndexError: {next_layer_item}")
+                    temp_set.discard(next_layer_item)
     return temp_set
 
 def buildLayers(_target_user_id, _layer_count, _df, _G:nx.Graph,top_n:int=5):
