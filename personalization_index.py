@@ -284,11 +284,12 @@ def plot_same_recommendations(df):
         comb_counts = Counter()
         for row in data.itertuples(index=False):
             for comb in combinations(row, size):
-                comb_counts[comb] += 1
+                sorted_comb = tuple(sorted(comb))
+                comb_counts[sorted_comb] += 1
         return comb_counts
 
     # Storing combination counts for sizes 2, 3, 4, 5
-    combination_counts = {size: get_combination_counts(df, size) for size in range(2, 6)}
+    combination_counts = {size: get_combination_counts(df, size) for size in range(0, 6)}
 
     # Counting how many users received the same combinations
     same_comb_users = {size: sum(1 for count in comb_count.values() if count > 1) 
