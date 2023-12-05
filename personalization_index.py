@@ -137,10 +137,12 @@ def pairwise_jaccard_similarity_sparse(mat):
 
     return avg_distance
 
-def simpson_diversity_index(df):
+def simpson_diversity_index():
     """Calculate the Simpson Diversity Index for a given list of recommendations.
     D = 1 - (sum((n/N)^2))
     """
+    df = pd.read_pickle('data/scored_test_sample.pkl')
+
     # Assuming the 'User' column exists and the rest are item recommendations
     if 'User' in df.columns:
         rec = df.drop('User', axis=1)
