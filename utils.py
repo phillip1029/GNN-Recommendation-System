@@ -106,9 +106,11 @@ def recommend_items_to_user(user_id):
     fig, axs = plt.subplots(1, 5, figsize=(20,6))
     fig.patch.set_alpha(0)
     for i, title in enumerate(titles):        
-        url = items_df.loc[items_df['title'] == title]['Image-URL-L'][:1].values[0]
+        url = items_df.loc[items_df['title'] == title]['Image-URL-L'][:1].values[0]S
         img = Image.open(requests.get(url, stream=True, headers=headers).raw)
-        rating = item_ratings.loc[item_ratings['item_id'] == items_df.loc[items_df['title'] == title]['item_id'][:1].values[0]]['rating'].mean()
+        rating = item_ratings.loc[(item_ratings['item_id'] == items_df.loc[items_df['title'] == title]['item_id'][:1].values[0]) & (item_ratings['rating'] != 0)]['rating'].mean()
+
+        # rating = item_ratings.loc[item_ratings['item_id'] == items_df.loc[items_df['title'] == title]['item_id'][:1].values[0]]['rating'].mean()
         axs[i].axis("off")
         axs[i].imshow(img)
         axs[i].set_title(f'{rating:.1f}/10', y=-0.1, fontsize=18)
