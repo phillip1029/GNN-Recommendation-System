@@ -76,10 +76,10 @@ def plot_book_year_distribution():
     plt.show()
 
 def plot_rating_distribution():
-    _, _, ratings_df, _ = load_data()
+    _, _, _, all_ratings_df = load_data()
     # plot the distribution of ratings
     plt.figure(figsize=(10, 6))
-    sns.countplot(x='rating', data=ratings_df)
+    sns.countplot(x='rating', data=all_ratings_df)
     plt.title('Distribution of Ratings')
     plt.show()
 
