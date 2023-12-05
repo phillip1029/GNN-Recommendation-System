@@ -319,7 +319,7 @@ def plot_same_recommendations(df):
     plt.xticks(range(2, 6))  # Set x-ticks to be the combination sizes
     plt.show()
 
-def plot_scored_test_sample_combination_percentage_bar(top_n=50):
+def plot_scored_test_sample_combination_percentage_bar(top_n=20):
     scored_test_sample = pd.read_pickle('data/scored_test_sample.pkl')
     
     def get_combination_counts(data, size):
@@ -349,11 +349,17 @@ def plot_scored_test_sample_combination_percentage_bar(top_n=50):
     combination_counts_df = combination_counts_df.head(top_n)
 
     # Plotting
-    plt.figure(figsize=(12, 15))
-    plt.barh(combination_counts_df['Combination'].astype(str), combination_counts_df['Count']/4707*100)
+    plt.figure(figsize=(8, 10))
+    bars = plt.barh(combination_counts_df['Combination'].astype(str), combination_counts_df['Count']/4707*100)
+
+    # Add labels on the bars
+    for bar in bars:
+        plt.text(bar.get_width(), bar.get_y() + bar.get_height() / 2, 
+                f'{round(bar.get_width(), 1)}%', 
+                va='center', ha='left')
+    
     plt.xlabel('Percentage (%)')
-    plt.ylabel('Combination')
-    plt.title('Percentage of Top 5 Item Combinations')
+    plt.title('Percentage of Top 5 Recommendations')
     plt.gca().invert_yaxis()  # Invert y-axis for better readability
     plt.show()
 
