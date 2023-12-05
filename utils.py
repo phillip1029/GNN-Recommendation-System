@@ -39,7 +39,8 @@ def load_data():
 
     return items_df, users_df, ratings_df, all_ratings_df
 
-def plot_age_distribution(users_df):
+def plot_age_distribution():
+    _, users_df, _, _ = load_data()
     # Plotting the age distribution
     plt.figure(figsize=(10, 6))
     plt.hist(users_df["age"], bins=range(0, 100, 5), edgecolor='black')
@@ -63,7 +64,8 @@ def plot_age_distribution(users_df):
 #     plt.ylabel("Frequency")
 #     plt.show()
 
-def plot_book_year_distribution(items_df):
+def plot_book_year_distribution():
+    items_df, _, _, _ = load_data()
     # book publication year distribution
     sns.displot(items_df['Year-Of-Publication'], kde=False, bins=range(1940, 2011, 5), height=6, aspect=2)
     plt.title('Book Publication Year Distribution')
@@ -73,7 +75,8 @@ def plot_book_year_distribution(items_df):
     plt.xlim(1940, 2011)
     plt.show()
 
-def plot_rating_distribution(ratings_df):
+def plot_rating_distribution():
+    _, _, ratings_df, _ = load_data()
     # plot the distribution of ratings
     plt.figure(figsize=(10, 6))
     sns.countplot(x='rating', data=ratings_df)
