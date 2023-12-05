@@ -317,6 +317,44 @@ def plot_same_recommendations(df):
     plt.xticks(range(2, 6))  # Set x-ticks to be the combination sizes
     plt.show()
 
+def plot_scored_test_sample_combination_percentage_bar(top_n=50):
+    scored_test_sample = pd.read_pickle('data/scored_test_sample.pkl')
+    
+    def get_combination_counts(data, size):
+        comb_counts = Counter()
+        for row in data.itertuples(index=False):
+            for comb in combinations(row, size):
+                sorted_comb = tuple(sorted(comb))
+                comb_counts[sorted_comb] += 1
+        return comb_counts
+
+    scored_test_sample_combination_counts_size_5 = get_combination_counts(scored_test_sample, 5)
+
+    # Calculating the sum of all counts
+    # sum_of_counts = sum(scored_test_sample_combination_counts_size_5.values())
+    # print('sum of counts:', sum_of_counts)
+
+    # Calculating the number of unique combinations
+    # size = len(scored_test_sample_combination_counts_size_5)
+    # print('size or num of rows:', size)
+
+    # Convert Counter to a DataFrame
+    combination_counts_df = pd.DataFrame(scored_test_sample_combination_counts_size_5.items(), columns=['Combination', 'Count'])
+
+    # Sorting the DataFrame by Count in descending order for better visualization
+    combination_counts_df = combination_counts_df.sort_values(by='Count', ascending=False)
+    combination_counts_df = combination_counts_df.reset_index(drop=True)
+    combination_counts_df = combination_counts_df.head(top_n)
+
+    # Plotting
+    plt.figure(figsize=(12, 15))
+    plt.barh(combination_counts_df['Combination'].astype(str), combination_counts_df['Count']/4707*100)
+    plt.xlabel('Percentage (%)')
+    plt.ylabel('Combination')
+    plt.title('Percentage of Top 5 Item Combinations')
+    plt.gca().invert_yaxis()  # Invert y-axis for better readability
+    plt.show()
+
 if __name__ == "__main__":
     path = os.getcwd()
     inputfile = os.path.join(path, 'data/top_5_recommendations.csv')
