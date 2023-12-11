@@ -1,5 +1,6 @@
 **/.DS_Store
 **/__pycache__/
+data/Planetoid/
 
 # Virtual environment
 .venv
@@ -8,3 +9,6 @@
 
 # node modules
 node_modules
+
+# individual file
+KC_test_mac.py
